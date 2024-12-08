@@ -91,6 +91,62 @@ app.delete('/recipes/:id', (req, res) => {
     });
 });
 
+// Login endpoint
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).send('Username and password are required.');
+    }
+
+    connection.query(
+        'SELECT * FROM users WHERE username = ? AND password = ?',
+        [username, password],
+        (err, results) => {
+            if (err) {
+                return res.status(500).send('Error checking user credentials.');
+            }
+
+            if (results.length > 0) {
+                const user = results[0];
+                const token = generateToken(user); // Replace with actual token logic
+                res.status(200).json({ token });
+            } else {
+                res.status(401).send('Invalid username or password.');
+            }
+        }
+    );
+});
+
+function generateToken(user) {
+    // Replace with JWT or any other token generation logic
+    return `${user.username}-${Date.now()}`;
+}
+
+// Register endpoint
+app.post('/register', (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).send('Username and password are required.');
+    }
+
+    connection.query(
+        'INSERT INTO users (username, password) VALUES (?, ?)',
+        [username, password],
+        (err, results) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(409).send('Username already exists.');
+                }
+                return res.status(500).send('Error registering user.');
+            }
+
+            res.status(201).send('User registered successfully.');
+        }
+    );
+});
+
 // Start the server
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Server running on port ${process.env.PORT || 3000}`);
