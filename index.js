@@ -31,13 +31,14 @@ app.post('/register', (req, res) => {
         [username, password],
         (err, results) => {
             if (err) {
-                console.error('Error registering user:', err);  // Log the error for debugging
+                console.error('Error during INSERT:', err);
                 if (err.code === 'ER_DUP_ENTRY') {
                     return res.status(409).send('Username already exists.');
                 }
                 return res.status(500).send('Error registering user.');
             }
 
+            console.log('User added successfully:', results);
             res.status(201).send('User registered successfully.');
         }
     );
