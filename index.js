@@ -18,6 +18,11 @@ connection.connect((err) => {
     }
 });
 
+// Root route
+app.get('/', (req, res) => {
+    res.send('Welcome to the Recipe API!');
+});
+
 // Register endpoint
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
@@ -42,6 +47,17 @@ app.post('/register', (req, res) => {
             res.status(201).send('User registered successfully.');
         }
     );
+});
+
+// Get all recipes
+app.get('/recipes', (req, res) => {
+    connection.query('SELECT * FROM recipes', (err, results) => {
+        if (err) {
+            res.status(500).send('Error fetching recipes');
+        } else {
+            res.json(results);
+        }
+    });
 });
 
 // Start the server
