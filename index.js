@@ -49,10 +49,23 @@ app.post('/register', (req, res) => {
     );
 });
 
+// Get all users
+app.get('/users', (req, res) => {
+    connection.query('SELECT * FROM users', (err, results) => {
+        if (err) {
+            console.error('Error fetching users:', err);
+            res.status(500).send('Error fetching users');
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 // Get all recipes
 app.get('/recipes', (req, res) => {
     connection.query('SELECT * FROM recipes', (err, results) => {
         if (err) {
+            console.error('Error fetching recipes:', err);
             res.status(500).send('Error fetching recipes');
         } else {
             res.json(results);
